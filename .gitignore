@@ -128,4 +128,5 @@ Temporary Items
 .apdisk
 
 /forex
+/docker/
 # End of https://www.gitignore.io/api/go,macos,jetbrains
