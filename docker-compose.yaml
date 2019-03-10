@@ -1,0 +1,26 @@
+version: "3"
+services:
+  forex:
+    container_name: forex_api_app
+    build: .
+    ports:
+    - "9999:9999"
+    depends_on:
+    - postgres
+    - redis
+  postgres:
+    container_name: forex_postgres
+    image: postgres
+    restart: unless-stopped
+    volumes:
+    - "./docker/db:/var/lib/postgresql/data"
+    ports:
+    - "5432:5432"
+  redis:
+    container_name: forex_redis
+    image: redis
+    restart: unless-stopped
+    volumes:
+    - "./docker/data:/data"
+    ports:
+    - "6379:6379"
