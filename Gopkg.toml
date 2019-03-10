@@ -25,9 +25,6 @@
 #   unused-packages = true
 
 
-[[constraint]]
-  name = "github.com/labstack/echo"
-  version = "4.0.0"
 
 [prune]
   go-tests = true
@@ -36,3 +33,7 @@
 [[constraint]]
   name = "github.com/jinzhu/gorm"
   version = "1.9.2"
+
+[[constraint]]
+  name = "github.com/labstack/echo"
+  version = "3.1.0"
