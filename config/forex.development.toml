@@ -1,0 +1,19 @@
+[app]
+appname = "Forex"
+port = ":9999"
+
+
+[database]
+host = "postgres"
+port = "5432"
+database = "forex"
+user = "postgres"
+password = ""
+ssl = "disable"
+
+
+
+[redis]
+host = "redis"
+port = "6379"
+password = ""
