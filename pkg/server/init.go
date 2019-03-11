@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/taufanmahaputra/forex/pkg/controller"
+	"github.com/taufanmahaputra/forex/pkg/lib/config"
 	"github.com/taufanmahaputra/forex/pkg/repository"
 	"github.com/taufanmahaputra/forex/pkg/service"
 	"log"
@@ -12,12 +13,14 @@ import (
 
 var rateRepository repository.RateRepository
 
-var rateController *controller.RateController
-
 var rateService service.RateService
 
+var rateController *controller.RateController
+
 func Init() error {
-	db := getSQLDB()
+	cfg := config.GetConfig()
+
+	db := getSQLDB(cfg)
 
 	rateRepository = repository.RateRepository{DB: db}
 
@@ -28,13 +31,20 @@ func Init() error {
 	return nil
 }
 
-func getSQLDB() *gorm.DB {
-	db, err := gorm.Open("postgres", "host=postgres port=5432 user=postgres dbname=forex sslmode=disable")
+func getSQLDB(cfg config.Config) *gorm.DB {
+	dbConfig := "host=" + cfg.Database.Host +
+		" port=" + cfg.Database.Port +
+		" user=" + cfg.Database.User +
+		" dbname=" + cfg.Database.Database +
+		" sslmode=" + cfg.Database.SSL
+
+	db, err := gorm.Open("postgres", dbConfig)
 
 	for err != nil { // Re-establish db connection every 3 secs if failed
 		log.Println(err)
 		time.Sleep(3 * time.Second)
-		db, err = gorm.Open("postgres", "host=postgres port=5432 user=postgres dbname=forex sslmode=disable")
+		db, err = gorm.Open("postgres", dbConfig)
 	}
+
 	return db
 }

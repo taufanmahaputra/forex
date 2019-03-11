@@ -22,5 +22,6 @@ func (rs RateService) CreateExchangeRate(rate *repository.ExchangeRate) error {
 		log.Printf("[Service - CreateExchangeRate] : %s", err)
 		return err
 	}
+
 	return nil
 }

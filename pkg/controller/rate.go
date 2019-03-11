@@ -8,14 +8,14 @@ import (
 
 type ExchangeRate struct {
 	CurrencyFrom string `json:"currency_from"`
-	CurrencyTo string `json:"currency_to"`
+	CurrencyTo   string `json:"currency_to"`
 }
 
 type RateController struct {
 	rateService service.RateService
 }
 
-func InitRateController(rateService service.RateService) *RateController  {
+func InitRateController(rateService service.RateService) *RateController {
 	return &RateController{
 		rateService: rateService,
 	}
@@ -24,7 +24,7 @@ func InitRateController(rateService service.RateService) *RateController  {
 func (rc *RateController) PutNewExchangeRate(rate ExchangeRate) error {
 	newExchangeRate := repository.ExchangeRate{
 		CurrencyFrom: rate.CurrencyFrom,
-		CurrencyTo: rate.CurrencyTo,
+		CurrencyTo:   rate.CurrencyTo,
 	}
 
 	err := rc.rateService.CreateExchangeRate(&newExchangeRate)
@@ -32,5 +32,6 @@ func (rc *RateController) PutNewExchangeRate(rate ExchangeRate) error {
 		log.Printf("[Controller - PutNewExchangeRate] : %s", err)
 		return err
 	}
+
 	return nil
 }

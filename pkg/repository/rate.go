@@ -6,9 +6,9 @@ import (
 )
 
 type ExchangeRate struct {
-	Id int64
+	Id           int64
 	CurrencyFrom string
-	CurrencyTo string
+	CurrencyTo   string
 }
 
 type RateRepositoryItf interface {
@@ -26,5 +26,6 @@ func (r RateRepository) InsertExchangeRate(rate *ExchangeRate) error {
 		log.Printf("[Repo - InsertExchangeRate] : %s", result.Error)
 		return result.Error
 	}
+
 	return nil
 }

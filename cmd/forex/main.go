@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/taufanmahaputra/forex/pkg/lib/config"
 	"github.com/taufanmahaputra/forex/pkg/server"
 	"log"
 )
 
-func main()  {
+func main() {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
@@ -21,5 +22,7 @@ func main()  {
 		log.Fatal(err)
 	}
 
-	e.Logger.Fatal(e.Start(":9999"))
+	cfg := config.GetConfig()
+
+	e.Logger.Fatal(e.Start(cfg.App.Port))
 }
