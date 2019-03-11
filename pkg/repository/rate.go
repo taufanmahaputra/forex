@@ -13,6 +13,7 @@ type ExchangeRate struct {
 
 type RateRepositoryItf interface {
 	InsertExchangeRate(*ExchangeRate) error
+	DeleteExchangeRateById(*ExchangeRate) error
 }
 
 type RateRepository struct {
@@ -24,6 +25,17 @@ func (r RateRepository) InsertExchangeRate(rate *ExchangeRate) error {
 
 	if result.Error != nil {
 		log.Printf("[Repo - InsertExchangeRate] : %s", result.Error)
+		return result.Error
+	}
+
+	return nil
+}
+
+func (r RateRepository) DeleteExchangeRateById(rate *ExchangeRate) error {
+	result := r.DB.Delete(rate)
+
+	if result.Error != nil {
+		log.Printf("[Repo - DeleteExchangeRateById] : %s", result.Error)
 		return result.Error
 	}
 

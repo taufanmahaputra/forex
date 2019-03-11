@@ -9,7 +9,7 @@ type RateService struct {
 	rateRepository repository.RateRepositoryItf
 }
 
-func InitRateService(rateRepository repository.RateRepository) RateService {
+func InitRateService(rateRepository repository.RateRepositoryItf) RateService {
 	return RateService{
 		rateRepository: rateRepository,
 	}
@@ -20,6 +20,17 @@ func (rs RateService) CreateExchangeRate(rate *repository.ExchangeRate) error {
 
 	if err != nil {
 		log.Printf("[Service - CreateExchangeRate] : %s", err)
+		return err
+	}
+
+	return nil
+}
+
+func (rs RateService) DeleteExchangeRate(rate *repository.ExchangeRate) error {
+	err := rs.rateRepository.DeleteExchangeRateById(rate)
+
+	if err != nil {
+		log.Printf("[Service - DeleteExchangeRate] : %s", err)
 		return err
 	}
 

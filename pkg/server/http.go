@@ -3,9 +3,15 @@ package server
 import (
 	"github.com/taufanmahaputra/forex/pkg/controller"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo"
 )
+
+type Response struct {
+	Title   string `json:"title"`
+	Message string `json:"message"`
+}
 
 type HttpService struct {
 }
@@ -16,16 +22,17 @@ func NewHttpServer() HttpService {
 
 func (s HttpService) RegisterHandler(e *echo.Echo) {
 	e.GET("/", index)
-	e.POST("api/v1/rate", handleNewRate)
-}
 
-type Response struct {
-	Title   string `json:"title"`
-	Message string `json:"message"`
+	api := e.Group("/api")
+	apiV1 := api.Group("/v1")
+
+	//TODO: validate request payload
+	apiV1.POST("/rate", handleNewRate)
+	apiV1.DELETE("/rate/:id", handleDeleteRateById)
 }
 
 func index(ctx echo.Context) error {
-	return handleResponse(ctx, http.StatusOK, Response{
+	return response(ctx, http.StatusOK, Response{
 		"Foreign exchange rate API",
 		"OK",
 	})
@@ -34,17 +41,28 @@ func index(ctx echo.Context) error {
 func handleNewRate(ctx echo.Context) error {
 	rate := new(controller.ExchangeRate)
 	if err := ctx.Bind(rate); err != nil {
-		return handleResponse(ctx, http.StatusBadRequest, Response{Message: "Invalid payload"})
+		return response(ctx, http.StatusBadRequest, Response{Message: "Invalid payload"})
 	}
 
 	err := rateController.PutNewExchangeRate(*rate)
 	if err != nil {
-		return handleResponse(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
+		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
 	}
 
-	return handleResponse(ctx, http.StatusCreated, rate)
+	return response(ctx, http.StatusCreated, rate)
 }
 
-func handleResponse(ctx echo.Context, statusCode int, response interface{}) error {
+func handleDeleteRateById(ctx echo.Context) error {
+	id, _  := strconv.ParseInt(ctx.Param("id"), 10, 64)
+
+	err := rateController.RemoveExchangeRateById(id)
+	if err != nil {
+		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
+	}
+
+	return response(ctx, http.StatusOK, Response{Message: "OK"})
+}
+
+func response(ctx echo.Context, statusCode int, response interface{}) error {
 	return ctx.JSON(statusCode, response)
 }
