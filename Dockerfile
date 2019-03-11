@@ -14,4 +14,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /forex ./cmd/fore
 # Single layer image
 FROM scratch
 COPY --from=build /forex .
+COPY ./config ./config
 CMD ["/forex"]
