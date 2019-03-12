@@ -29,6 +29,8 @@ func (s HttpService) RegisterHandler(e *echo.Echo) {
 	//TODO: validate request payload
 	apiV1.POST("/rate", handleNewRate)
 	apiV1.DELETE("/rate/:id", handleDeleteRateById)
+
+	apiV1.POST("/rate/input_daily", handleNewDailyRateData)
 }
 
 func index(ctx echo.Context) error {
@@ -41,7 +43,7 @@ func index(ctx echo.Context) error {
 func handleNewRate(ctx echo.Context) error {
 	rate := new(controller.ExchangeRate)
 	if err := ctx.Bind(rate); err != nil {
-		return response(ctx, http.StatusBadRequest, Response{Message: "Invalid payload"})
+		return response(ctx, http.StatusBadRequest, Response{Message: "Cannot process your request"})
 	}
 
 	err := rateController.PutNewExchangeRate(*rate)
@@ -53,7 +55,7 @@ func handleNewRate(ctx echo.Context) error {
 }
 
 func handleDeleteRateById(ctx echo.Context) error {
-	id, _  := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	id, _ := strconv.ParseInt(ctx.Param("id"), 10, 64)
 
 	err := rateController.RemoveExchangeRateById(id)
 	if err != nil {
@@ -61,6 +63,20 @@ func handleDeleteRateById(ctx echo.Context) error {
 	}
 
 	return response(ctx, http.StatusOK, Response{Message: "OK"})
+}
+
+func handleNewDailyRateData(ctx echo.Context) error {
+	rateData := new(controller.ExchangeRateData)
+	if err := ctx.Bind(rateData); err != nil {
+		return response(ctx, http.StatusBadRequest, Response{Message: "Cannot process your request"})
+	}
+
+	err := rateController.PutNewDailyExchangeRateData(*rateData)
+	if err != nil {
+		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
+	}
+
+	return response(ctx, http.StatusCreated, rateData)
 }
 
 func response(ctx echo.Context, statusCode int, response interface{}) error {

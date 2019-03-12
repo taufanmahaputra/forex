@@ -12,8 +12,10 @@ import (
 )
 
 var rateRepository repository.RateRepository
+var rateDataRepository repository.RateDataRepository
 
 var rateService service.RateService
+var rateDataService service.RateDataService
 
 var rateController *controller.RateController
 
@@ -23,10 +25,12 @@ func Init() error {
 	db := getSQLDB(cfg)
 
 	rateRepository = repository.RateRepository{DB: db}
+	rateDataRepository = repository.RateDataRepository{DB: db}
 
 	rateService = service.InitRateService(rateRepository)
+	rateDataService = service.InitRateDataService(rateDataRepository)
 
-	rateController = controller.InitRateController(rateService)
+	rateController = controller.InitRateController(rateService, rateDataService)
 
 	return nil
 }

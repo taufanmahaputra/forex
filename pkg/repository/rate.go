@@ -24,7 +24,7 @@ func (r RateRepository) InsertExchangeRate(rate *ExchangeRate) error {
 	result := r.DB.Create(rate)
 
 	if result.Error != nil {
-		log.Printf("[Repo - InsertExchangeRate] : %s", result.Error)
+		log.Printf("[RateRepository - InsertExchangeRate] : %s", result.Error)
 		return result.Error
 	}
 
@@ -35,7 +35,7 @@ func (r RateRepository) DeleteExchangeRateById(rate *ExchangeRate) error {
 	result := r.DB.Delete(rate)
 
 	if result.Error != nil {
-		log.Printf("[Repo - DeleteExchangeRateById] : %s", result.Error)
+		log.Printf("[RateRepository - DeleteExchangeRateById] : %s", result.Error)
 		return result.Error
 	}
 

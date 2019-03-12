@@ -19,7 +19,7 @@ func (rs RateService) CreateExchangeRate(rate *repository.ExchangeRate) error {
 	err := rs.rateRepository.InsertExchangeRate(rate)
 
 	if err != nil {
-		log.Printf("[Service - CreateExchangeRate] : %s", err)
+		log.Printf("[RateService - CreateExchangeRate] : %s", err)
 		return err
 	}
 
@@ -30,7 +30,7 @@ func (rs RateService) DeleteExchangeRate(rate *repository.ExchangeRate) error {
 	err := rs.rateRepository.DeleteExchangeRateById(rate)
 
 	if err != nil {
-		log.Printf("[Service - DeleteExchangeRate] : %s", err)
+		log.Printf("[RateService - DeleteExchangeRate] : %s", err)
 		return err
 	}
 
