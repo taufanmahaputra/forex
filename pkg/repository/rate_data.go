@@ -15,6 +15,7 @@ type ExchangeRateData struct {
 
 type RateDataRepositoryItf interface {
 	InsertDailyExchangeRateData(*ExchangeRate, *ExchangeRateData, ) error
+	GetSevenSpecificExchangeRateData(*ExchangeRate) ([]ExchangeRateData, error)
 }
 
 type RateDataRepository struct {
@@ -36,4 +37,23 @@ func (rd RateDataRepository) InsertDailyExchangeRateData(rate *ExchangeRate, dat
 	}
 
 	return nil
+}
+
+func (rd RateDataRepository) GetSevenSpecificExchangeRateData(rate *ExchangeRate) ([]ExchangeRateData, error) {
+	var rateDataList []ExchangeRateData
+
+	result := rd.DB.Raw("SELECT * "+
+		"FROM exchange_rate_datas "+
+		"WHERE exchange_rate_id = ("+
+		"	SELECT id FROM exchange_rates WHERE currency_from = ? AND currency_to = ?"+
+		") "+
+		"ORDER BY valid_time DESC "+
+		"LIMIT 7;", rate.CurrencyFrom, rate.CurrencyTo).Scan(&rateDataList)
+
+	if result.Error != nil {
+		log.Printf("[RateDataRepository - GetSevenSpecificExchangeRateData] : %s", result.Error)
+		return nil, result.Error
+	}
+
+	return rateDataList, nil
 }

@@ -9,8 +9,8 @@ import (
 )
 
 type ExchangeRate struct {
-	CurrencyFrom string `json:"currency_from"`
-	CurrencyTo   string `json:"currency_to"`
+	CurrencyFrom string `json:"currency_from" query:"currency_from"`
+	CurrencyTo   string `json:"currency_to" query:"currency_to"`
 }
 
 type ExchangeRateData struct {
@@ -89,4 +89,19 @@ func (rc *RateController) PutNewDailyExchangeRateData(data ExchangeRateData) err
 	}
 
 	return nil
+}
+
+func (rc *RateController) FindTrendBySevenExchangeRateData(rate ExchangeRate) (map[string]interface{}, error) {
+	exchangeRate := repository.ExchangeRate{
+		CurrencyFrom: rate.CurrencyFrom,
+		CurrencyTo:   rate.CurrencyTo,
+	}
+
+	trend, err := rc.rateDataService.GetTrendBySevenExchangeRateData(&exchangeRate)
+	if err != nil {
+		log.Printf("[RateController - FindTrendBySevenExchangeRateData] : %s", err)
+		return nil, err
+	}
+
+	return trend, nil
 }

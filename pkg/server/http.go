@@ -31,6 +31,7 @@ func (s HttpService) RegisterHandler(e *echo.Echo) {
 	apiV1.DELETE("/rate/:id", handleDeleteRateById)
 
 	apiV1.POST("/rate/input_daily", handleNewDailyRateData)
+	apiV1.GET("/rate/trend", handleGetTrendBySevenExchangeRateData)
 }
 
 func index(ctx echo.Context) error {
@@ -62,7 +63,7 @@ func handleDeleteRateById(ctx echo.Context) error {
 		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
 	}
 
-	return response(ctx, http.StatusOK, Response{Message: "OK"})
+	return response(ctx, http.StatusNoContent, nil)
 }
 
 func handleNewDailyRateData(ctx echo.Context) error {
@@ -77,6 +78,20 @@ func handleNewDailyRateData(ctx echo.Context) error {
 	}
 
 	return response(ctx, http.StatusCreated, rateData)
+}
+
+func handleGetTrendBySevenExchangeRateData(ctx echo.Context) error {
+	rate := new(controller.ExchangeRate)
+	if err := ctx.Bind(rate); err != nil {
+		return response(ctx, http.StatusBadRequest, Response{Message: "Cannot process your request"})
+	}
+
+	trend, err := rateController.FindTrendBySevenExchangeRateData(*rate)
+	if err != nil {
+		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
+	}
+
+	return response(ctx, http.StatusOK, trend)
 }
 
 func response(ctx echo.Context, statusCode int, response interface{}) error {
