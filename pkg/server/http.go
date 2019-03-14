@@ -74,7 +74,7 @@ func handleNewDailyRateData(ctx echo.Context) error {
 
 	err := rateController.PutNewDailyExchangeRateData(*rateData)
 	if err != nil {
-		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
+		return response(ctx, http.StatusInternalServerError, Response{Message: err.Error()})
 	}
 
 	return response(ctx, http.StatusCreated, rateData)
@@ -88,7 +88,7 @@ func handleGetTrendBySevenExchangeRateData(ctx echo.Context) error {
 
 	trend, err := rateController.FindTrendBySevenExchangeRateData(*rate)
 	if err != nil {
-		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
+		return response(ctx, http.StatusInternalServerError, Response{Message: err.Error()})
 	}
 
 	return response(ctx, http.StatusOK, trend)

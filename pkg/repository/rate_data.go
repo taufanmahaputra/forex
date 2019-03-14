@@ -14,21 +14,21 @@ type ExchangeRateData struct {
 }
 
 type RateDataRepositoryItf interface {
-	InsertDailyExchangeRateData(int64, *ExchangeRateData, ) error
-	GetSevenSpecificExchangeRateData(int64) ([]ExchangeRateData, error)
-	GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(int64, string) (map[string]interface{}, error)
+	InsertDailyExchangeRateData(*ExchangeRate, *ExchangeRateData) error
+	GetSevenSpecificExchangeRateData(*ExchangeRate) []ExchangeRateData
+	GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(*ExchangeRateData) map[string]interface{}
 }
 
 type RateDataRepository struct {
 	DB *gorm.DB
 }
 
-func (rd RateDataRepository) InsertDailyExchangeRateData(rateId int64, data *ExchangeRateData) error {
+func (rd RateDataRepository) InsertDailyExchangeRateData(rate *ExchangeRate, data *ExchangeRateData) error {
 	result := rd.DB.Exec("INSERT INTO exchange_rate_datas (exchange_rate_id, rate, valid_time) "+
 		"VALUES (?, ?, ?) "+
 		"ON CONFLICT (exchange_rate_id, valid_time) "+
 		"DO UPDATE"+
-		"	SET rate = EXCLUDED.rate", rateId, data.Rate, data.ValidTime)
+		"	SET rate = EXCLUDED.rate", rate.Id, data.Rate, data.ValidTime)
 
 	if result.Error != nil {
 		log.Printf("[RateDataRepository - InsertExchangeRateData] : %s", result.Error)
@@ -38,22 +38,22 @@ func (rd RateDataRepository) InsertDailyExchangeRateData(rateId int64, data *Exc
 	return nil
 }
 
-func (rd RateDataRepository) GetSevenSpecificExchangeRateData(rateId int64) ([]ExchangeRateData, error) {
+func (rd RateDataRepository) GetSevenSpecificExchangeRateData(rate *ExchangeRate) []ExchangeRateData {
 	var rateDataList []ExchangeRateData
 
 	result := rd.DB.Raw("SELECT * "+
 		"FROM exchange_rate_datas WHERE exchange_rate_id = ?"+
-		"ORDER BY valid_time DESC LIMIT 7", rateId).Scan(&rateDataList)
+		"ORDER BY valid_time DESC LIMIT 7", rate.Id).Scan(&rateDataList)
 
 	if result.Error != nil {
 		log.Printf("[RateDataRepository - GetSevenSpecificExchangeRateData] : %s", result.Error)
-		return nil, result.Error
+		return nil
 	}
 
-	return rateDataList, nil
+	return rateDataList
 }
 
-func (rd RateDataRepository) GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(rateId int64, date string) (map[string]interface{}, error) {
+func (rd RateDataRepository) GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(data *ExchangeRateData) map[string]interface{} {
 	var days int
 	var averageRate float64
 
@@ -62,18 +62,18 @@ func (rd RateDataRepository) GetSevenDaysAverageExchangeRateDataByExchangeRateId
 		"WHERE "+
 		" exchange_rate_id = ? AND "+
 		" valid_time BETWEEN (DATE ? - interval '6 days') "+
-		"				 AND (DATE ?)", rateId, date, date).Row()
+		"				 AND (DATE ?)", data.ExchangeRateId, data.ValidTime, data.ValidTime).Row()
 
 	err := result.Scan(&days, &averageRate)
 	if err != nil {
 		log.Printf("[RateDataRepository - GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate] : %s", err)
-		return nil, err
+		return nil
 	}
 
 	res := make(map[string]interface{})
 	res["days"] = days
 	res["average"] = averageRate
 
-	return res, nil
+	return res
 
 }

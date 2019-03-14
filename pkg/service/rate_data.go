@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+	"fmt"
 	"github.com/taufanmahaputra/forex/pkg/repository"
 	"log"
 	"math"
@@ -21,13 +23,15 @@ func InitRateDataService(rateRepository repository.RateRepositoryItf, rateDataRe
 }
 
 func (rs RateDataService) CreateDailyExchangeRateData(rate *repository.ExchangeRate, data *repository.ExchangeRateData) error {
-	rateId, err := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
-	if err != nil {
-		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : %s", err)
-		return err
+	rateId := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
+	if rateId == 0 {
+		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : Exchange rate doesnt exist")
+		return errors.New(fmt.Sprintf("Exchange rate doesnt exist"))
 	}
 
-	err = rs.rateDataRepository.InsertDailyExchangeRateData(rateId, data)
+	rate.Id = rateId
+
+	err := rs.rateDataRepository.InsertDailyExchangeRateData(rate, data)
 	if err != nil {
 		log.Printf("[RateDataService - CreateDailyExchangeRate] : %s", err)
 		return err
@@ -37,16 +41,18 @@ func (rs RateDataService) CreateDailyExchangeRateData(rate *repository.ExchangeR
 }
 
 func (rs RateDataService) GetTrendBySevenExchangeRateData(rate *repository.ExchangeRate) (map[string]interface{}, error) {
-	rateId, err := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
-	if err != nil {
-		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : %s", err)
-		return nil, err
+	rateId := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
+	if rateId == 0 {
+		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : Exchange rate doesnt exist")
+		return nil, errors.New(fmt.Sprintf("Exchange rate doesnt exist"))
 	}
 
-	rateDataList, err := rs.rateDataRepository.GetSevenSpecificExchangeRateData(rateId)
-	if err != nil {
-		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : %s", err)
-		return nil, err
+	rate.Id = rateId
+
+	rateDataList := rs.rateDataRepository.GetSevenSpecificExchangeRateData(rate)
+	if rateDataList == nil {
+		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : No Data for specific exchange rate")
+		return nil, errors.New(fmt.Sprintf("No Data for specific exchange rate"))
 	}
 
 	minRate := math.Inf(1)
