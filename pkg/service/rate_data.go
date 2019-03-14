@@ -9,18 +9,25 @@ import (
 type Map map[string]interface{}
 
 type RateDataService struct {
+	rateRepository     repository.RateRepositoryItf
 	rateDataRepository repository.RateDataRepositoryItf
 }
 
-func InitRateDataService(rateDataRepository repository.RateDataRepositoryItf) RateDataService {
+func InitRateDataService(rateRepository repository.RateRepositoryItf, rateDataRepository repository.RateDataRepositoryItf) RateDataService {
 	return RateDataService{
+		rateRepository:     rateRepository,
 		rateDataRepository: rateDataRepository,
 	}
 }
 
 func (rs RateDataService) CreateDailyExchangeRateData(rate *repository.ExchangeRate, data *repository.ExchangeRateData) error {
-	err := rs.rateDataRepository.InsertDailyExchangeRateData(rate, data)
+	rateId, err := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
+	if err != nil {
+		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : %s", err)
+		return err
+	}
 
+	err = rs.rateDataRepository.InsertDailyExchangeRateData(rateId, data)
 	if err != nil {
 		log.Printf("[RateDataService - CreateDailyExchangeRate] : %s", err)
 		return err
@@ -30,8 +37,13 @@ func (rs RateDataService) CreateDailyExchangeRateData(rate *repository.ExchangeR
 }
 
 func (rs RateDataService) GetTrendBySevenExchangeRateData(rate *repository.ExchangeRate) (map[string]interface{}, error) {
-	rateDataList, err := rs.rateDataRepository.GetSevenSpecificExchangeRateData(rate)
+	rateId, err := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
+	if err != nil {
+		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : %s", err)
+		return nil, err
+	}
 
+	rateDataList, err := rs.rateDataRepository.GetSevenSpecificExchangeRateData(rateId)
 	if err != nil {
 		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : %s", err)
 		return nil, err

@@ -28,7 +28,7 @@ func Init() error {
 	rateDataRepository = repository.RateDataRepository{DB: db}
 
 	rateService = service.InitRateService(rateRepository)
-	rateDataService = service.InitRateDataService(rateDataRepository)
+	rateDataService = service.InitRateDataService(rateRepository, rateDataRepository)
 
 	rateController = controller.InitRateController(rateService, rateDataService)
 
