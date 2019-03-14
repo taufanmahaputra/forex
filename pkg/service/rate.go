@@ -15,6 +15,10 @@ func InitRateService(rateRepository repository.RateRepositoryItf) RateService {
 	}
 }
 
+func (rs RateService) GetGetExchangeRateList() []repository.ExchangeRate {
+	return rs.rateRepository.GetExchangeRateList()
+}
+
 func (rs RateService) CreateExchangeRate(rate *repository.ExchangeRate) error {
 	err := rs.rateRepository.InsertExchangeRate(rate)
 

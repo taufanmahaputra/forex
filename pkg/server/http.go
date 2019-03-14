@@ -27,6 +27,7 @@ func (s HttpService) RegisterHandler(e *echo.Echo) {
 	apiV1 := api.Group("/v1")
 
 	//TODO: validate request payload
+	apiV1.GET("/rate", handleGetRateList)
 	apiV1.POST("/rate", handleNewRate)
 	apiV1.DELETE("/rate/:id", handleDeleteRateById)
 
@@ -39,6 +40,15 @@ func index(ctx echo.Context) error {
 		"Foreign exchange rate API",
 		"OK",
 	})
+}
+
+func handleGetRateList(ctx echo.Context) error {
+	exchangeRateList := rateController.GetExchangeRateList()
+	if exchangeRateList == nil {
+		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
+	}
+
+	return response(ctx, http.StatusOK, exchangeRateList)
 }
 
 func handleNewRate(ctx echo.Context) error {

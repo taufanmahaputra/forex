@@ -32,6 +32,10 @@ func InitRateController(rateService service.RateService, rateDataService service
 	}
 }
 
+func (rc *RateController) GetExchangeRateList() []repository.ExchangeRate {
+	return rc.rateService.GetGetExchangeRateList()
+}
+
 func (rc *RateController) PutNewExchangeRate(rate ExchangeRate) error {
 	newExchangeRate := repository.ExchangeRate{
 		CurrencyFrom: rate.CurrencyFrom,

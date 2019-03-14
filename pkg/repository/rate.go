@@ -6,9 +6,9 @@ import (
 )
 
 type ExchangeRate struct {
-	Id           int64
-	CurrencyFrom string
-	CurrencyTo   string
+	Id           int64  `json:"id"`
+	CurrencyFrom string `json:"currency_from"`
+	CurrencyTo   string `json:"currency_to"`
 }
 
 type RateRepositoryItf interface {
