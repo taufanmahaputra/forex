@@ -57,12 +57,12 @@ func (rd RateDataRepository) GetSevenDaysAverageExchangeRateDataByExchangeRateId
 	var days int
 	var averageRate float64
 
-	result := rd.DB.Raw("SELECT COUNT(*) as days, AVG(rate), LA(rate) "+
+	result := rd.DB.Raw("SELECT COUNT(*) as days, AVG(rate) "+
 		"FROM exchange_rate_datas "+
 		"WHERE "+
 		" exchange_rate_id = ? AND "+
 		" valid_time BETWEEN (DATE ? - interval '6 days') "+
-		"				 AND (DATE '2018-03-11')", rateId, date).Row()
+		"				 AND (DATE ?)", rateId, date, date).Row()
 
 	err := result.Scan(&days, &averageRate)
 	if err != nil {
