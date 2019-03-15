@@ -6,6 +6,7 @@ import (
 	"github.com/taufanmahaputra/forex/pkg/repository"
 	"log"
 	"math"
+	"time"
 )
 
 type Map map[string]interface{}
@@ -23,15 +24,15 @@ func InitRateDataService(rateRepository repository.RateRepositoryItf, rateDataRe
 }
 
 func (rs RateDataService) CreateDailyExchangeRateData(rate *repository.ExchangeRate, data *repository.ExchangeRateData) error {
-	rateId := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
-	if rateId == 0 {
+	rateId, err := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
+	if err != nil {
 		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : Exchange rate doesnt exist")
 		return errors.New(fmt.Sprintf("Exchange rate doesnt exist"))
 	}
 
 	rate.Id = rateId
 
-	err := rs.rateDataRepository.InsertDailyExchangeRateData(rate, data)
+	err = rs.rateDataRepository.InsertDailyExchangeRateData(rate, data)
 	if err != nil {
 		log.Printf("[RateDataService - CreateDailyExchangeRate] : %s", err)
 		return err
@@ -41,8 +42,8 @@ func (rs RateDataService) CreateDailyExchangeRateData(rate *repository.ExchangeR
 }
 
 func (rs RateDataService) GetTrendBySevenExchangeRateData(rate *repository.ExchangeRate) (map[string]interface{}, error) {
-	rateId := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
-	if rateId == 0 {
+	rateId, err := rs.rateRepository.GetExchangeRateIdByCurrencyPair(rate)
+	if err != nil {
 		log.Printf("[RateDataService - GetTrendBySevenExchangeRateData] : Exchange rate doesnt exist")
 		return nil, errors.New(fmt.Sprintf("Exchange rate doesnt exist"))
 	}
@@ -87,4 +88,47 @@ func (rs RateDataService) GetTrendBySevenExchangeRateData(rate *repository.Excha
 	}
 
 	return result, nil
+}
+
+func (rs RateDataService) GetListTrackedExchangeRateDataByDate(date time.Time) ([]map[string]interface{}, error) {
+	var trackedRateDataList []map[string]interface{}
+
+	rateList := rs.rateRepository.GetExchangeRateList()
+	if rateList == nil {
+		log.Printf("[RateDataService - GetListTrackedExchangeRateDataByDate] : Cannot get exchange rate list")
+		return nil, errors.New(fmt.Sprintf("Cannot get exchange rate list"))
+	}
+
+	for _, rate := range rateList {
+		var averageRateData float64
+		var err error
+
+		trackedData := Map{
+			"id":            rate.Id,
+			"currency_from": rate.CurrencyFrom,
+			"currency_to":   rate.CurrencyTo,
+		}
+
+		currRateData := new(repository.ExchangeRateData)
+		currRateData.ExchangeRateId = rate.Id
+		currRateData.ValidTime = date
+
+		currRateData = rs.rateDataRepository.GetExchangeRateDataByExchangeRateIdAndDate(currRateData)
+
+		if currRateData != nil {
+			averageRateData, err = rs.rateDataRepository.GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(currRateData)
+		}
+
+		if currRateData == nil || err != nil || averageRateData == 0 {
+			trackedData["rate"] = "insufficient data"
+			trackedData["average"] = "insufficient data"
+		} else {
+			trackedData["rate"] = currRateData.Rate
+			trackedData["average"] = averageRateData
+		}
+
+		trackedRateDataList = append(trackedRateDataList, trackedData)
+	}
+
+	return trackedRateDataList, nil
 }

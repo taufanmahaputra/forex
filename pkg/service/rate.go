@@ -15,7 +15,7 @@ func InitRateService(rateRepository repository.RateRepositoryItf) RateService {
 	}
 }
 
-func (rs RateService) GetGetExchangeRateList() []repository.ExchangeRate {
+func (rs RateService) GetExchangeRateList() []repository.ExchangeRate {
 	return rs.rateRepository.GetExchangeRateList()
 }
 
