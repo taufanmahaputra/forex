@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"log"
 	"time"
@@ -17,7 +18,7 @@ type RateDataRepositoryItf interface {
 	InsertDailyExchangeRateData(*ExchangeRate, *ExchangeRateData) error
 	GetExchangeRateDataByExchangeRateIdAndDate(*ExchangeRateData) *ExchangeRateData
 	GetSevenSpecificExchangeRateData(*ExchangeRate) []ExchangeRateData
-	GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(*ExchangeRateData) map[string]interface{}
+	GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(*ExchangeRateData) (float64, error)
 }
 
 type RateDataRepository struct {
@@ -32,7 +33,7 @@ func (rd RateDataRepository) InsertDailyExchangeRateData(rate *ExchangeRate, dat
 		"	SET rate = EXCLUDED.rate", rate.Id, data.Rate, data.ValidTime)
 
 	if result.Error != nil {
-		log.Printf("[RateDataRepository - InsertExchangeRateData] : %s", result.Error)
+		log.Printf("[RateDataRepository - InsertDailyExchangeRateData] : %s", result.Error)
 		return result.Error
 	}
 
@@ -40,10 +41,11 @@ func (rd RateDataRepository) InsertDailyExchangeRateData(rate *ExchangeRate, dat
 }
 
 func (rd RateDataRepository) GetExchangeRateDataByExchangeRateIdAndDate(data *ExchangeRateData) *ExchangeRateData {
-	result := rd.DB.
+	result := rd.DB.Table("exchange_rate_datas").
 		Where("exchange_rate_id = ? AND valid_time = ?", data.ExchangeRateId, data.ValidTime).Find(&data)
+
 	if result.Error != nil {
-		log.Printf("[RateRepository - GetExchangeRateList] : %s", result.Error)
+		log.Printf("[RateDataRepository - GetExchangeRateDataByExchangeRateIdAndDate] : %s", result.Error)
 		return nil
 	}
 
@@ -65,27 +67,23 @@ func (rd RateDataRepository) GetSevenSpecificExchangeRateData(rate *ExchangeRate
 	return rateDataList
 }
 
-func (rd RateDataRepository) GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(data *ExchangeRateData) map[string]interface{} {
-	var days int
+func (rd RateDataRepository) GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate(data *ExchangeRateData) (float64, error) {
 	var averageRate float64
 
-	result := rd.DB.Raw("SELECT COUNT(*) as days, AVG(rate) "+
+	date := data.ValidTime.Format("2006-01-02")
+	queryStmt := fmt.Sprintf("SELECT (CASE WHEN COUNT(*) < 7 THEN 0 ELSE AVG(rate) END) AS average "+
 		"FROM exchange_rate_datas "+
 		"WHERE "+
-		" exchange_rate_id = ? AND "+
-		" valid_time BETWEEN (DATE ? - interval '6 days') "+
-		"				 AND (DATE ?)", data.ExchangeRateId, data.ValidTime, data.ValidTime).Row()
+		" exchange_rate_id = %d AND "+
+		" valid_time BETWEEN (DATE '%s' - interval '6 days') AND (DATE '%s')", data.ExchangeRateId, date, date)
 
-	err := result.Scan(&days, &averageRate)
+	result := rd.DB.Raw(queryStmt).Row()
+	err := result.Scan(&averageRate)
 	if err != nil {
 		log.Printf("[RateDataRepository - GetSevenDaysAverageExchangeRateDataByExchangeRateIdAndDate] : %s", err)
-		return nil
+		return 0, err
 	}
 
-	res := make(map[string]interface{})
-	res["days"] = days
-	res["average"] = averageRate
-
-	return res
+	return averageRate, nil
 
 }
