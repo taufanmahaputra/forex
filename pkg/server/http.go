@@ -33,6 +33,7 @@ func (s HttpService) RegisterHandler(e *echo.Echo) {
 
 	apiV1.POST("/rate/input_daily", handleNewDailyRateData)
 	apiV1.GET("/rate/trend", handleGetTrendBySevenExchangeRateData)
+	apiV1.GET("/rate/track", handleGetListTrackedExchangeRateData)
 }
 
 func index(ctx echo.Context) error {
@@ -102,6 +103,17 @@ func handleGetTrendBySevenExchangeRateData(ctx echo.Context) error {
 	}
 
 	return response(ctx, http.StatusOK, trend)
+}
+
+func handleGetListTrackedExchangeRateData(ctx echo.Context) error {
+	date := ctx.QueryParam("date")
+
+	trackedList, err := rateController.GetListTrackedExchangeRateData(date)
+	if err != nil {
+		return response(ctx, http.StatusInternalServerError, Response{Message: err.Error()})
+	}
+
+	return response(ctx, http.StatusOK, trackedList)
 }
 
 func response(ctx echo.Context, statusCode int, response interface{}) error {

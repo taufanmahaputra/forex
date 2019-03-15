@@ -33,7 +33,7 @@ func InitRateController(rateService service.RateService, rateDataService service
 }
 
 func (rc *RateController) GetExchangeRateList() []repository.ExchangeRate {
-	return rc.rateService.GetGetExchangeRateList()
+	return rc.rateService.GetExchangeRateList()
 }
 
 func (rc *RateController) PutNewExchangeRate(rate ExchangeRate) error {
@@ -108,4 +108,10 @@ func (rc *RateController) FindTrendBySevenExchangeRateData(rate ExchangeRate) (m
 	}
 
 	return trend, nil
+}
+
+func (rc *RateController) GetListTrackedExchangeRateData(date string) ([]map[string]interface{}, error) {
+	dateParsed, _ := time.Parse("2006-01-02", date)
+
+	return rc.rateDataService.GetListTrackedExchangeRateDataByDate(dateParsed)
 }
