@@ -31,7 +31,7 @@ func (rs RateService) CreateExchangeRate(rate *repository.ExchangeRate) error {
 }
 
 func (rs RateService) DeleteExchangeRate(rate *repository.ExchangeRate) error {
-	err := rs.rateRepository.DeleteExchangeRateById(rate)
+	err := rs.rateRepository.DeleteExchangeRateByID(rate)
 
 	if err != nil {
 		log.Printf("[RateService - DeleteExchangeRate] : %s", err)

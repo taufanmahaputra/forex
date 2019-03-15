@@ -14,7 +14,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 
-	httpServer := server.NewHttpServer()
+	httpServer := server.NewHTTPServer()
 	httpServer.RegisterHandler(e)
 
 	err := server.Init()

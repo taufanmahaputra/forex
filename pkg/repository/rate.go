@@ -6,7 +6,7 @@ import (
 )
 
 type ExchangeRate struct {
-	Id           int64  `json:"id"`
+	ID           int64  `json:"id"`
 	CurrencyFrom string `json:"currency_from"`
 	CurrencyTo   string `json:"currency_to"`
 }
@@ -14,8 +14,8 @@ type ExchangeRate struct {
 type RateRepositoryItf interface {
 	GetExchangeRateList() ([]ExchangeRate)
 	InsertExchangeRate(*ExchangeRate) error
-	DeleteExchangeRateById(*ExchangeRate) error
-	GetExchangeRateIdByCurrencyPair(*ExchangeRate) (int64, error)
+	DeleteExchangeRateByID(*ExchangeRate) error
+	GetExchangeRateIDByCurrencyPair(*ExchangeRate) (int64, error)
 }
 
 type RateRepository struct {
@@ -45,24 +45,24 @@ func (r RateRepository) InsertExchangeRate(rate *ExchangeRate) error {
 	return nil
 }
 
-func (r RateRepository) DeleteExchangeRateById(rate *ExchangeRate) error {
+func (r RateRepository) DeleteExchangeRateByID(rate *ExchangeRate) error {
 	result := r.DB.Delete(rate)
 
 	if result.Error != nil {
-		log.Printf("[RateRepository - DeleteExchangeRateById] : %s", result.Error)
+		log.Printf("[RateRepository - DeleteExchangeRateByID] : %s", result.Error)
 		return result.Error
 	}
 
 	return nil
 }
 
-func (r RateRepository) GetExchangeRateIdByCurrencyPair(rate *ExchangeRate) (id int64, err error) {
+func (r RateRepository) GetExchangeRateIDByCurrencyPair(rate *ExchangeRate) (id int64, err error) {
 	err = r.DB.Raw("SELECT id "+
 		"FROM exchange_rates "+
 		"WHERE currency_from = ? AND currency_to = ?", rate.CurrencyFrom, rate.CurrencyTo).Row().Scan(&id)
 
 	if err != nil {
-		log.Printf("[RateRepository - GetExchangeRateIdByCurrencyPair] : %s", err)
+		log.Printf("[RateRepository - GetExchangeRateIDByCurrencyPair] : %s", err)
 		return 0, err
 	}
 

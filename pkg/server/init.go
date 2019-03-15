@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/postgres" // dialect postgres
 	"github.com/taufanmahaputra/forex/pkg/controller"
 	"github.com/taufanmahaputra/forex/pkg/lib/config"
 	"github.com/taufanmahaputra/forex/pkg/repository"

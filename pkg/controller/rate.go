@@ -51,14 +51,14 @@ func (rc *RateController) PutNewExchangeRate(rate ExchangeRate) error {
 	return nil
 }
 
-func (rc *RateController) RemoveExchangeRateById(id int64) error {
+func (rc *RateController) RemoveExchangeRateByID(id int64) error {
 	exchangeRate := repository.ExchangeRate{
-		Id: id,
+		ID: id,
 	}
 
 	err := rc.rateService.DeleteExchangeRate(&exchangeRate)
 	if err != nil {
-		log.Printf("[RateController - RemoveExchangeRateById] : %s", err)
+		log.Printf("[RateController - RemoveExchangeRateByID] : %s", err)
 		return err
 	}
 

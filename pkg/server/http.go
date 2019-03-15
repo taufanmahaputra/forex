@@ -13,14 +13,14 @@ type Response struct {
 	Message string `json:"message"`
 }
 
-type HttpService struct {
+type HTTPService struct {
 }
 
-func NewHttpServer() HttpService {
-	return HttpService{}
+func NewHTTPServer() HTTPService {
+	return HTTPService{}
 }
 
-func (s HttpService) RegisterHandler(e *echo.Echo) {
+func (s HTTPService) RegisterHandler(e *echo.Echo) {
 	e.GET("/", index)
 
 	api := e.Group("/api")
@@ -29,7 +29,7 @@ func (s HttpService) RegisterHandler(e *echo.Echo) {
 	//TODO: validate request payload
 	apiV1.GET("/rate", handleGetRateList)
 	apiV1.POST("/rate", handleNewRate)
-	apiV1.DELETE("/rate/:id", handleDeleteRateById)
+	apiV1.DELETE("/rate/:id", handleDeleteRateByID)
 
 	apiV1.POST("/rate/input_daily", handleNewDailyRateData)
 	apiV1.GET("/rate/trend", handleGetTrendBySevenExchangeRateData)
@@ -66,10 +66,10 @@ func handleNewRate(ctx echo.Context) error {
 	return response(ctx, http.StatusCreated, rate)
 }
 
-func handleDeleteRateById(ctx echo.Context) error {
+func handleDeleteRateByID(ctx echo.Context) error {
 	id, _ := strconv.ParseInt(ctx.Param("id"), 10, 64)
 
-	err := rateController.RemoveExchangeRateById(id)
+	err := rateController.RemoveExchangeRateByID(id)
 	if err != nil {
 		return response(ctx, http.StatusInternalServerError, Response{Message: "Internal server error"})
 	}
