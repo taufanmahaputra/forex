@@ -52,7 +52,7 @@ func (suite *RateServiceTestSuite) TestGetExchangeListWithDatabaseErrorShouldRet
 }
 
 func (suite *RateServiceTestSuite) TestCreateExchangeRateShouldReturnSuccess() {
-	rate := repository.ExchangeRate{}
+	var rate repository.ExchangeRate
 
 	suite.rateRepository.
 		EXPECT().
@@ -65,7 +65,7 @@ func (suite *RateServiceTestSuite) TestCreateExchangeRateShouldReturnSuccess() {
 }
 
 func (suite *RateServiceTestSuite) TestCreateExchangeRateWithDatabaseErrorShouldReturnError() {
-	rate := repository.ExchangeRate{}
+	var rate repository.ExchangeRate
 
 	suite.rateRepository.
 		EXPECT().
@@ -78,7 +78,7 @@ func (suite *RateServiceTestSuite) TestCreateExchangeRateWithDatabaseErrorShould
 }
 
 func (suite *RateServiceTestSuite) TestDeleteExchangeRateShouldReturnSuccess() {
-	rate := repository.ExchangeRate{}
+	var rate repository.ExchangeRate
 
 	suite.rateRepository.
 		EXPECT().
@@ -91,7 +91,7 @@ func (suite *RateServiceTestSuite) TestDeleteExchangeRateShouldReturnSuccess() {
 }
 
 func (suite *RateServiceTestSuite) TestDeleteExchangeRateWithDatabaseErrorShouldReturnError() {
-	rate := repository.ExchangeRate{}
+	var rate repository.ExchangeRate
 
 	suite.rateRepository.
 		EXPECT().
