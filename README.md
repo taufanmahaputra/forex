@@ -19,7 +19,7 @@ $ docker-compose up
 ```
 ##### Test
 ```sh
-$ go test
+$ go test -v ./test/...
 ```
 
 License
