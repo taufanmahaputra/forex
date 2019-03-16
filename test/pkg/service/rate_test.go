@@ -61,7 +61,7 @@ func (suite *RateServiceTestSuite) TestCreateExchangeRateShouldReturnSuccess() {
 
 	result := suite.rateService.CreateExchangeRate(&rate)
 
-	suite.assert.Nil(result)
+	suite.assert.NoError(result)
 }
 
 func (suite *RateServiceTestSuite) TestCreateExchangeRateWithDatabaseErrorShouldReturnError() {
@@ -87,7 +87,7 @@ func (suite *RateServiceTestSuite) TestDeleteExchangeRateShouldReturnSuccess() {
 
 	result := suite.rateService.DeleteExchangeRate(&rate)
 
-	suite.assert.Nil(result)
+	suite.assert.NoError(result)
 }
 
 func (suite *RateServiceTestSuite) TestDeleteExchangeRateWithDatabaseErrorShouldReturnError() {
