@@ -1,4 +1,5 @@
 # Forex
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/aee5663d71604a0fb09f2120f00fd6cb)](https://app.codacy.com/app/taufanmahaputra/forex?utm_source=github.com&utm_medium=referral&utm_content=taufanmahaputra/forex&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/taufanmahaputra/forex.svg?branch=master)](https://travis-ci.com/taufanmahaputra/forex)  [![Go Report Card](https://goreportcard.com/badge/github.com/taufanmahaputra/forex)](https://goreportcard.com/report/github.com/taufanmahaputra/forex)  [![Maintainability](https://api.codeclimate.com/v1/badges/6c8ef9c28fe335f3c9d0/maintainability)](https://codeclimate.com/github/taufanmahaputra/forex/maintainability)
 
 ----
