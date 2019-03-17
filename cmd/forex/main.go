@@ -17,12 +17,14 @@ func main() {
 	httpServer := server.NewHTTPServer()
 	httpServer.RegisterHandler(e)
 
-	err := server.Init()
+	cfg := config.GetConfig()
+
+	db := server.GetSQLDB(cfg)
+
+	err := server.Init(db)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	cfg := config.GetConfig()
 
 	e.Logger.Fatal(e.Start(cfg.App.Port))
 }

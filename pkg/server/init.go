@@ -19,11 +19,7 @@ var rateDataService service.RateDataService
 
 var rateController *controller.RateController
 
-func Init() error {
-	cfg := config.GetConfig()
-
-	db := getSQLDB(cfg)
-
+func Init(db *gorm.DB) error {
 	rateRepository = repository.RateRepository{DB: db}
 	rateDataRepository = repository.RateDataRepository{DB: db}
 
@@ -35,7 +31,7 @@ func Init() error {
 	return nil
 }
 
-func getSQLDB(cfg config.Config) *gorm.DB {
+func GetSQLDB(cfg config.Config) *gorm.DB {
 	dbConfig := "host=" + cfg.Database.Host +
 		" port=" + cfg.Database.Port +
 		" user=" + cfg.Database.User +
