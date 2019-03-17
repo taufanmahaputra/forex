@@ -122,6 +122,10 @@ func (suite *HTTPHandlerTestSuite) TestHandleNewRateWithDBErrorShouldReturnError
 		WithQuery(`INSERT INTO "exchange_rates" ("currency_from","currency_to")`).
 		WithExecException()
 
+	gomocket.Catcher.NewMock().
+		WithQuery(`INSERT INTO exchange_rates ("currency_from","currency_to")`).
+		WithExecException()
+
 	body := suite.client.
 		POST("/api/v1/rate").WithJSON(rate).
 		Expect().
