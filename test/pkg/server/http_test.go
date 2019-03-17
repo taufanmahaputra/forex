@@ -25,6 +25,7 @@ func (suite *HTTPHandlerTestSuite) SetupTest() {
 	httpServer.RegisterHandler(e)
 
 	mocket.Catcher.Register()
+	mocket.Catcher.Logging = true
 	db, _ := gorm.Open(mocket.DriverName, "test")
 
 	server.Init(db)
@@ -36,7 +37,7 @@ func (suite *HTTPHandlerTestSuite) SetupTest() {
 		},
 		Reporter: httpexpect.NewAssertReporter(suite.T()),
 		Printers: []httpexpect.Printer{
-			httpexpect.NewCompactPrinter(suite.T()),
+			httpexpect.NewDebugPrinter(suite.T(), true),
 		},
 	})
 }
