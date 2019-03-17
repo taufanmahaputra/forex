@@ -10,10 +10,11 @@ services:
     - redis
   postgres:
     container_name: forex_postgres
-    image: postgres
+    image: postgres:10.5
     restart: unless-stopped
     volumes:
-    - "./docker/db:/var/lib/postgresql/data"
+    - ./docker/db:/var/lib/postgresql/data
+    - ./cmd:/docker-entrypoint-initdb.d
     ports:
     - "5432:5432"
   redis:
