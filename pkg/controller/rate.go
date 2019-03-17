@@ -4,7 +4,6 @@ import (
 	"github.com/taufanmahaputra/forex/pkg/repository"
 	"github.com/taufanmahaputra/forex/pkg/service"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -14,10 +13,10 @@ type ExchangeRate struct {
 }
 
 type ExchangeRateData struct {
-	Date         string `json:"date"`
-	CurrencyFrom string `json:"currency_from"`
-	CurrencyTo   string `json:"currency_to"`
-	Rate         string `json:"rate"`
+	Date         string  `json:"date"`
+	CurrencyFrom string  `json:"currency_from"`
+	CurrencyTo   string  `json:"currency_to"`
+	Rate         float64 `json:"rate"`
 }
 
 type RateController struct {
@@ -71,11 +70,6 @@ func (rc *RateController) PutNewDailyExchangeRateData(data ExchangeRateData) err
 		CurrencyTo:   data.CurrencyTo,
 	}
 
-	rate, err := strconv.ParseFloat(data.Rate, 64)
-	if err != nil {
-		return err
-	}
-
 	date, err := time.Parse("2006-01-02", data.Date)
 	if err != nil {
 		return err
@@ -83,7 +77,7 @@ func (rc *RateController) PutNewDailyExchangeRateData(data ExchangeRateData) err
 
 	exchangeRateData := repository.ExchangeRateData{
 		ValidTime: date,
-		Rate:      rate,
+		Rate:      data.Rate,
 	}
 
 	err = rc.rateDataService.CreateDailyExchangeRateData(&exchangeRate, &exchangeRateData)
