@@ -1,4 +1,6 @@
 language: go
 go:
   - master
-script: go test -v ./test/...
+script: go test -v ./test/... -race -coverprofile=coverage.txt -covermode=atomic -coverpkg github.com/taufanmahaputra/forex/pkg/...
+after_success:
+- bash <(curl -s https://codecov.io/bash)
