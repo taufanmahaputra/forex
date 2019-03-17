@@ -124,7 +124,7 @@ func (suite *HTTPHandlerTestSuite) TestHandleNewRateWithDBErrorShouldReturnError
 		WithExecException()
 
 	gomocket.Catcher.NewMock().
-		WithQuery(`INSERT INTO exchange_rates ("currency_from","currency_to")`).
+		WithQuery(`INSERT  INTO "exchange_rates" ("currency_from","currency_to")`).
 		WithExecException()
 
 	body := suite.client.
